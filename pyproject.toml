@@ -26,6 +26,9 @@ dependencies = [
     "numpy",
     "scipy",
     "sympy",
+    "pandas",
+    "torch",
+    "geom-median",
     "scitex-dev>=0.11.7",
 ]
 
@@ -72,6 +75,10 @@ scitex-linalg = "scitex_linalg"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = ["--disable-warnings"]
+markers = [
+    "smoke: fast CLI happy-path tests (<60s, runs on every PR)",
+    "e2e: end-to-end workflows against real subsystems (runs on every PR)",
+]
 
 [tool.coverage.run]
 parallel = true

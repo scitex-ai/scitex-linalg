@@ -14,37 +14,86 @@
 
 <!-- scitex-badges:start -->
 <p align="center">
-  <a href="https://pypi.org/project/scitex-linalg/"><img src="https://img.shields.io/pypi/v/scitex-linalg.svg" alt="PyPI"></a>
-  <a href="https://pypi.org/project/scitex-linalg/"><img src="https://img.shields.io/pypi/pyversions/scitex-linalg.svg" alt="Python"></a>
-  <a href="https://github.com/ywatanabe1989/scitex-linalg/actions/workflows/test.yml"><img src="https://github.com/ywatanabe1989/scitex-linalg/actions/workflows/test.yml/badge.svg" alt="Tests"></a>
-  <a href="https://codecov.io/gh/ywatanabe1989/scitex-linalg"><img src="https://codecov.io/gh/ywatanabe1989/scitex-linalg/graph/badge.svg" alt="Coverage"></a>
-  <a href="https://scitex-linalg.readthedocs.io/en/latest/"><img src="https://readthedocs.org/projects/scitex-linalg/badge/?version=latest" alt="Docs"></a>
-  <a href="https://www.gnu.org/licenses/agpl-3.0"><img src="https://img.shields.io/badge/license-AGPL_v3-blue.svg" alt="License: AGPL v3"></a>
+  <a href="https://pypi.org/project/scitex-linalg/"><img src="https://img.shields.io/pypi/v/scitex-linalg?label=pypi" alt="pypi"></a>
+  <a href="https://pypi.org/project/scitex-linalg/"><img src="https://img.shields.io/pypi/pyversions/scitex-linalg?label=python" alt="python"></a>
+  <a href="https://scitex-linalg.readthedocs.io/en/latest/"><img src="https://img.shields.io/readthedocs/scitex-linalg?label=docs" alt="docs"></a>
+</p>
+<p align="center">
+  <a href="https://github.com/ywatanabe1989/scitex-linalg/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/ywatanabe1989/scitex-linalg/ci.yml?branch=develop&label=tests" alt="tests"></a>
+  <a href="https://codecov.io/gh/ywatanabe1989/scitex-linalg"><img src="https://img.shields.io/codecov/c/github/ywatanabe1989/scitex-linalg/develop?label=cov" alt="cov"></a>
 </p>
 <!-- scitex-badges:end -->
 
 ---
 
+## Quick Start
+
+```python
+import scitex_linalg as sxl
+
+sxl.cdist(u, v)                # pairwise distances
+sxl.cosine(v1, v2)             # cosine similarity (NaN-safe)
+sxl.nannorm(v, axis=-1)        # NaN-aware norm
+sxl.rebase_a_vec(v, v_base)    # project v onto v_base basis
+```
+
+## Demo
+
+```mermaid
+flowchart LR
+    A["u, v (np.ndarray)"] --> B["scitex_linalg.cdist"]
+    B --> C["pairwise distance matrix"]
+    A2["v with NaNs"] --> D["scitex_linalg.nannorm"]
+    D --> E["NaN-safe vector norm"]
+    A3["v, v_base"] --> F["scitex_linalg.rebase_a_vec"]
+    F --> G["projected coords"]
+    A4["xx (torch.Tensor)"] --> H["scitex_linalg.geometric_median"]
+    H --> I["robust median point"]
+```
+
+<p align="center"><sub><b>Figure 1.</b> Demo. Distances, NaN-safe norms, projections, and the torch geometric median.</sub></p>
+
+```python
+>>> import numpy as np, scitex_linalg as sxl
+>>> sxl.cosine(np.array([1, 0]), np.array([1, 1]))
+0.7071...
+>>> sxl.nannorm(np.array([3.0, np.nan, 4.0]))
+5.0
+```
+
 ## Installation
 
 ```bash
-pip install scitex-linalg            # core (numpy/scipy/sympy)
-pip install "scitex-linalg[torch]"   # + geometric_median (torch + geom-median)
+uv pip install "scitex-linalg[all]"
 ```
+
+<details>
+<summary><strong>Extras</strong></summary>
+
+| Extra | Enables |
+|-------|---------|
+| `all` | Everything below (`torch`) |
+| `torch` | Geometric median (`torch`, `geom-median`) |
+| `dev` | Test/lint tools (`pytest`, `ruff`, `scitex-dev`) |
+| `docs` | Sphinx build (`sphinx`, theme/parser extensions) |
+
+</details>
 
 ## Architecture
 
-```
-scitex_linalg/
-├── _distance.py             ← euclidean_distance, cdist, edist
-├── _misc.py                 ← cosine, nannorm, rebase_a_vec, three_line_lengths_to_coords
-├── _geometric_median.py     ← torch geometric median (optional [torch] extra)
-├── _vendor_decorators/      ← vendored numpy_fn / torch_fn / wrap (no scitex.* runtime dep)
-└── _skills/                 ← agent-facing skill pages
+```mermaid
+flowchart LR
+    UV["u, v"] --> DIST[euclidean_distance / cdist / edist]
+    V["vectors"] --> MISC[cosine / nannorm / rebase_a_vec]
+    XX["xx (torch.Tensor)"] --> GM[geometric_median]
+    DEC[vendor decorators] --> NP[numpy_fn]
+    DEC --> TF[torch_fn]
 ```
 
-Tiny single-purpose helpers. Pure numpy/scipy core; the geometric-median
-path opts into `torch` only when the `[torch]` extra is installed.
+<p align="center"><sub><b>Figure 2.</b> Architecture. Pure numpy/scipy core plus the torch geometric-median path and vendored decorators.</sub></p>
+
+Tiny single-purpose helpers. Core deps cover numpy/scipy/sympy/pandas/torch/geom-median;
+the geometric-median path lazy-loads so a missing torch still imports.
 
 ## 1 Interfaces
 
@@ -67,39 +116,6 @@ sxl.geometric_median(xx, dim=-1)          # torch geometric median (requires [to
 ```
 
 </details>
-
-## Demo
-
-```mermaid
-flowchart LR
-    A["u, v (np.ndarray)"] --> B["scitex_linalg.cdist"]
-    B --> C["pairwise distance matrix"]
-    A2["v with NaNs"] --> D["scitex_linalg.nannorm"]
-    D --> E["NaN-safe vector norm"]
-    A3["v, v_base"] --> F["scitex_linalg.rebase_a_vec"]
-    F --> G["projected coords"]
-    A4["xx (torch.Tensor)"] --> H["scitex_linalg.geometric_median"]
-    H --> I["robust median point"]
-```
-
-```python
->>> import numpy as np, scitex_linalg as sxl
->>> sxl.cosine(np.array([1, 0]), np.array([1, 1]))
-0.7071...
->>> sxl.nannorm(np.array([3.0, np.nan, 4.0]))
-5.0
-```
-
-## Quick Start
-
-```python
-import scitex_linalg as sxl
-
-sxl.cdist(u, v)                # pairwise distances
-sxl.cosine(v1, v2)             # cosine similarity (NaN-safe)
-sxl.nannorm(v, axis=-1)        # NaN-aware norm
-sxl.rebase_a_vec(v, v_base)    # project v onto v_base basis
-```
 
 ## Status
 
