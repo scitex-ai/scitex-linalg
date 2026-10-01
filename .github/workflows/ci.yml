@@ -48,9 +48,11 @@ jobs:
             printf 'MPLBACKEND=Agg\nRUN_E2E=1\n'
           } >> "$GITHUB_ENV"
       - uses: astral-sh/setup-uv@v7
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
         with:
           cache-dependency-glob: pyproject.toml
-      - name: Install (.[all,dev]) + pytest
+      - name: Install (.[all,dev]) + pytest on fork runner
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
         run: |
           set -euo pipefail
           uv venv --python ${{ matrix.python-version }} .venv
@@ -60,6 +62,15 @@ jobs:
           # subprocess (bare name, e.g. `scitex-dev …`) resolve it — else FileNotFoundError.
           export PATH="$PWD/.venv/bin:$PATH"
           .venv/bin/python -m pytest tests/ --cov="src/$PKG" --cov-report=xml --cov-report=term
+      # Native org jobs use the same real CPU SIF as immutable releases.
+      # A visible unsupported host GPU does not qualify this CPU test lane.
+      - name: Install (.[all,dev]) + pytest in digest-verified CPU SIF
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          SCITEX_CI_APPTAINER: ${{ vars.SCITEX_CI_APPTAINER }}
+          SCITEX_CI_SIF: ${{ vars.SCITEX_CI_SIF }}
+          SCITEX_CI_SIF_SHA256: ${{ vars.SCITEX_CI_SIF_SHA256 }}
+        run: bash .github/ci/exec-in-sif.sh run-in-sif.sh ${{ matrix.python-version }}
       - name: Upload coverage to Codecov
         if: always() && matrix.python-version == '3.12'
         uses: codecov/codecov-action@v5
