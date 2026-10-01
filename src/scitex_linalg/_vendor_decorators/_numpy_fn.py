@@ -17,7 +17,7 @@ from functools import wraps
 from typing import Any as _Any
 from typing import Callable
 
-from ._converters import _return_always, is_nested_decorator, to_numpy
+from ._converters import _require_torch, _return_always, is_nested_decorator, to_numpy
 
 
 def numpy_fn(func: Callable) -> Callable:
@@ -71,7 +71,7 @@ def numpy_fn(func: Callable) -> Callable:
                     hasattr(original_object, "__class__")
                     and original_object.__class__.__name__ == "Tensor"
                 ):
-                    import torch
+                    torch = _require_torch()
 
                     return torch.tensor(results)
                 elif (

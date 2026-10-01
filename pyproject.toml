@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "scitex-linalg"
-version = "0.1.5"
+version = "0.1.6"
 description = "Small linear-algebra helpers (distance, geometric median, cosine, nannorm) — standalone module from the SciTeX ecosystem"
 readme = "README.md"
 license = "AGPL-3.0-only"
@@ -26,6 +26,7 @@ dependencies = [
     "numpy",
     "scipy",
     "sympy",
+    "pandas",
     "scitex-dev>=0.11.7",
 ]
 
@@ -72,6 +73,10 @@ scitex-linalg = "scitex_linalg"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = ["--disable-warnings"]
+markers = [
+    "smoke: fast CLI happy-path tests (<60s, runs on every PR)",
+    "e2e: end-to-end workflows against real subsystems (runs on every PR)",
+]
 
 [tool.coverage.run]
 parallel = true

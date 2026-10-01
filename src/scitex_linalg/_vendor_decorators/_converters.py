@@ -26,6 +26,18 @@ class ConversionWarning(UserWarning):
     pass
 
 
+def _require_torch():
+    """Require Torch only when an optional tensor conversion is requested."""
+    try:
+        import torch
+    except ImportError as error:
+        raise ImportError(
+            "Tensor conversion requires the optional Torch dependencies; "
+            "install them with `pip install scitex-linalg[torch]`."
+        ) from error
+    return torch
+
+
 # Configure warnings
 warnings.simplefilter("always", ConversionWarning)
 
@@ -47,7 +59,7 @@ def _conversion_warning(old: _Any, new) -> None:
 
 def _try_device(tensor, device: str):
     """Try to move tensor to specified device with graceful fallback."""
-    import torch
+    torch = _require_torch()
 
     if not isinstance(tensor, torch.Tensor):
         return tensor
@@ -66,7 +78,7 @@ def _try_device(tensor, device: str):
 
 def is_torch(*args: _Any, **kwargs: _Any) -> bool:
     """Check if any input is a PyTorch tensor."""
-    import torch
+    torch = _require_torch()
 
     return any(isinstance(arg, torch.Tensor) for arg in args) or any(
         isinstance(val, torch.Tensor) for val in kwargs.values()
@@ -75,7 +87,7 @@ def is_torch(*args: _Any, **kwargs: _Any) -> bool:
 
 def is_cuda(*args: _Any, **kwargs: _Any) -> bool:
     """Check if any input is a CUDA tensor."""
-    import torch
+    torch = _require_torch()
 
     return any((isinstance(arg, torch.Tensor) and arg.is_cuda) for arg in args) or any(
         (isinstance(val, torch.Tensor) and val.is_cuda) for val in kwargs.values()
@@ -106,7 +118,7 @@ def to_torch(
     **kwargs: _Any,
 ) -> _Any:
     """Convert various data types to PyTorch tensors."""
-    import torch
+    torch = _require_torch()
 
     if device is None:
         device = kwargs.get("device", "cuda" if torch.cuda.is_available() else "cpu")
@@ -114,7 +126,7 @@ def to_torch(
     def _to_torch(data: _Any) -> _Any:
         """Internal conversion function for various data types."""
         import pandas as pd
-        import torch
+        torch = _require_torch()
 
         # Check for None
         if data is None:

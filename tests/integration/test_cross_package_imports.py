@@ -26,7 +26,7 @@ CROSS_PACKAGE_IMPORTS = [
 def test_cross_package_import_module_loads_successfully(module_name):
     """Importing scitex-linalg's declared cross-package dependency must succeed."""
     # Arrange
-    pytest.importorskip(module_name)
+    pytest.importorskip(module_name.split('.')[0])
     # Act
     mod = importlib.import_module(module_name)
     # Assert
