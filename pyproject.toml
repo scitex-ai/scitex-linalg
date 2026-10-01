@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "scitex-linalg"
-version = "0.1.5"
+version = "0.1.6"
 description = "Small linear-algebra helpers (distance, geometric median, cosine, nannorm) — standalone module from the SciTeX ecosystem"
 readme = "README.md"
 license = "AGPL-3.0-only"
@@ -27,8 +27,6 @@ dependencies = [
     "scipy",
     "sympy",
     "pandas",
-    "torch",
-    "geom-median",
     "scitex-dev>=0.11.7",
 ]
 

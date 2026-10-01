@@ -8,8 +8,14 @@
 This script does XYZ.
 """
 
-import torch
-from geom_median.torch import compute_geometric_median
+try:
+    import torch
+    from geom_median.torch import compute_geometric_median
+except ImportError as error:
+    raise ImportError(
+        "Geometric median requires the optional Torch dependencies; "
+        "install them with `pip install scitex-linalg[torch]`."
+    ) from error
 
 from ._vendor_decorators import torch_fn
 

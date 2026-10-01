@@ -92,8 +92,9 @@ flowchart LR
 
 <p align="center"><sub><b>Figure 2.</b> Architecture. Pure numpy/scipy core plus the torch geometric-median path and vendored decorators.</sub></p>
 
-Tiny single-purpose helpers. Core deps cover numpy/scipy/sympy/pandas/torch/geom-median;
-the geometric-median path lazy-loads so a missing torch still imports.
+Tiny single-purpose helpers. Core dependencies cover numpy/scipy/sympy/pandas.
+Install `scitex-linalg[torch]` for the geometric median and Torch numerical helpers;
+the package imports without that optional extra.
 
 ## 1 Interfaces
 
