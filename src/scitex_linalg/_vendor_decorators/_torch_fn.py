@@ -15,7 +15,7 @@ from typing import Callable
 
 import numpy as np
 
-from ._converters import _return_always, is_nested_decorator, to_torch
+from ._converters import _require_torch, _return_always, is_nested_decorator, to_torch
 
 
 def torch_fn(func: Callable) -> Callable:
@@ -88,7 +88,7 @@ def torch_fn(func: Callable) -> Callable:
 
         # Skip strict assertion for certain types that may not convert to tensors
         # Instead, convert what we can and pass through what we can't
-        import torch
+        torch = _require_torch()
 
         validated_args = []
         for arg_index, arg in enumerate(converted_args):
@@ -113,7 +113,7 @@ def torch_fn(func: Callable) -> Callable:
         results = func(*validated_args, **converted_kwargs)
 
         # Convert results back to original input types
-        import torch
+        torch = _require_torch()
 
         if isinstance(results, torch.Tensor):
             if original_object is not None:

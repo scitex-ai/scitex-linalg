@@ -5,6 +5,14 @@ All notable changes to `scitex-linalg` are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 versions follow [Semantic Versioning](https://semver.org/).
 
+## [0.1.6] - 2026-10-02
+
+- Verify real optional CPU tensor statistics and pandas/NumPy/list/tensor conversion workflows; document NaN propagation and the actual geometric-median signature.
+- Run native org CPU matrix controls through the same digest-verified SIF as releases; document CUDA auto-selection and the unvalidated GPU boundary.
+
+- Declare pandas for the real core converter while retaining Torch and geometric median as optional extras; use current org runners without renaming required matrix checks.
+- Preserve trusted-main license and CLA policy, and run strict complete release tests in the digest-verified, job-owned CI SIF before normal OIDC publishing.
+
 ## [Unreleased]
 
 ## [0.1.4] — 2026-05
