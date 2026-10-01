@@ -7,6 +7,8 @@ versions follow [Semantic Versioning](https://semver.org/).
 
 ## [0.1.6] - 2026-10-02
 
+- Verify real optional CPU tensor statistics and pandas/NumPy/list/tensor conversion workflows; document NaN propagation and the actual geometric-median signature.
+
 - Declare pandas for the real core converter while retaining Torch and geometric median as optional extras; use current org runners without renaming required matrix checks.
 - Preserve trusted-main license and CLA policy, and run strict complete release tests in the digest-verified, job-owned CI SIF before normal OIDC publishing.
 

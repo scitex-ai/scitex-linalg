@@ -33,7 +33,7 @@ import scitex_linalg as sxl
 
 sxl.cdist(u, v)                # pairwise distances
 sxl.cosine(v1, v2)             # cosine similarity (NaN-safe)
-sxl.nannorm(v, axis=-1)        # NaN-aware norm
+sxl.nannorm(v, axis=-1)        # norm; propagates NaN
 sxl.rebase_a_vec(v, v_base)    # project v onto v_base basis
 ```
 
@@ -44,20 +44,22 @@ flowchart LR
     A["u, v (np.ndarray)"] --> B["scitex_linalg.cdist"]
     B --> C["pairwise distance matrix"]
     A2["v with NaNs"] --> D["scitex_linalg.nannorm"]
-    D --> E["NaN-safe vector norm"]
+    D --> E["vector norm; NaN propagates"]
     A3["v, v_base"] --> F["scitex_linalg.rebase_a_vec"]
     F --> G["projected coords"]
     A4["xx (torch.Tensor)"] --> H["scitex_linalg.geometric_median"]
     H --> I["robust median point"]
 ```
 
-<p align="center"><sub><b>Figure 1.</b> Demo. Distances, NaN-safe norms, projections, and the torch geometric median.</sub></p>
+<p align="center"><sub><b>Figure 1.</b> Demo. Distances, NaN-propagating norms, projections, and the torch geometric median.</sub></p>
 
 ```python
 >>> import numpy as np, scitex_linalg as sxl
 >>> sxl.cosine(np.array([1, 0]), np.array([1, 1]))
 0.7071...
 >>> sxl.nannorm(np.array([3.0, np.nan, 4.0]))
+nan
+>>> sxl.nannorm(np.array([3.0, 4.0]))
 5.0
 ```
 
