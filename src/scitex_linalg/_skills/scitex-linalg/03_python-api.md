@@ -40,8 +40,11 @@ import scitex_linalg as sla
   Torch numerical helpers. Without that extra, `geometric_median` is `None`
   and each Torch numerical helper raises an actionable `ImportError` on use.
 - `geometric_median` takes `xx` and `dim`; it has no `backend` argument.
-  NumPy, list and pandas inputs pass through the real CPU tensor conversion
-  and retain their container type. Tensor inputs retain their tensor dtype.
+  NumPy, list and pandas inputs pass through tensor conversion and retain
+  their container type. The converter selects CUDA when Torch reports it
+  available, so that path requires hardware supported by the installed Torch
+  build. Tensor inputs retain their dtype and device. Release controls exercise
+  the CPU path; GPU execution has not been validated for this release.
 - `euclidean_distance` accepts NumPy, list, pandas and CPU tensor inputs.
   Array results retain the input container type; vector-to-vector scalar
   results are NumPy scalars.
